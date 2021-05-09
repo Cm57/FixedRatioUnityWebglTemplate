@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-us" style="box-sizing: border-box;height: 100%;">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>{{{ PRODUCT_NAME }}}</title>
+  </head>
+  <body style="margin: 0; width: 100%; height: 100%;">
+    <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} style="display: block;position: absolute;left:50%;top:50%;transform:translate(-50%,-50%);width: {{{ WIDTH }}}px; height: {{{ HEIGHT }}}px; background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+    <script>
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/{{{ DATA_FILENAME }}}",
+        frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+        codeUrl: "Build/{{{ CODE_FILENAME }}}",
+#if MEMORY_FILENAME
+        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "{{{ COMPANY_NAME }}}",
+        productName: "{{{ PRODUCT_NAME }}}",
+        productVersion: "{{{ PRODUCT_VERSION }}}",
+        matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      }).then((unityInstance) => {
+        Resize();
+      });
+      function Resize() {
+          let canvas = document.getElementById("unity-canvas");
+          let h = document.documentElement.clientHeight;
+          let w = document.documentElement.clientWidth;
+          let r = 1;//window.devicePixelRatio;
+          let ratio = {{{ HEIGHT }}} / {{{ WIDTH }}} ;
+          let ratioNow = h / w;
+          if (ratioNow > ratio) {
+              h = Math.floor(w * ratio);
+          } else {
+              w = Math.floor(h / ratio);
+          }
+          canvas.height = h * r;
+          canvas.style.height = h * r + "px";
+          canvas.width = w * r;
+          canvas.style.width = w * r + "px";
+      }
+      window.onresize = Resize;
+    </script>
+  </body>
+</html>
